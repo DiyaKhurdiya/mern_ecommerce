@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.0cfa2445.chunk.css",
+    "main.js": "/static/js/main.f112be38.chunk.js",
+    "main.js.map": "/static/js/main.f112be38.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.f5cfbed7.js",
+    "runtime-main.js.map": "/static/js/runtime-main.f5cfbed7.js.map",
+    "static/js/2.286e1a8f.chunk.js": "/static/js/2.286e1a8f.chunk.js",
+    "static/js/2.286e1a8f.chunk.js.map": "/static/js/2.286e1a8f.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.0cfa2445.chunk.css.map": "/static/css/main.0cfa2445.chunk.css.map",
+    "static/js/2.286e1a8f.chunk.js.LICENSE.txt": "/static/js/2.286e1a8f.chunk.js.LICENSE.txt",
+    "static/media/Home.css": "/static/media/PIC1.4d57c889.png",
+    "static/media/ResetPassword.css": "/static/media/banner1.e052403a.jpg",
+    "static/media/profile.697fdcd2.png": "/static/media/profile.697fdcd2.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f5cfbed7.js",
+    "static/js/2.286e1a8f.chunk.js",
+    "static/css/main.0cfa2445.chunk.css",
+    "static/js/main.f112be38.chunk.js"
+  ]
+}

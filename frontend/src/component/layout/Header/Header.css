@@ -1,0 +1,98 @@
+header {
+  padding: 8px;
+  background-color: #f2f1ef;
+  color: rgb(15, 15, 15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: auto;
+}
+
+header i {
+  margin-inline: 20px;
+  display: flex;
+}
+
+a.brand {
+  color: #202020;
+  font-size: 4rem;
+  font-family: "Italiana", serif;
+  margin-inline: 20px;
+  display: flex;
+}
+
+a.brand:hover {
+  color: #202020;
+}
+
+a.category {
+  color: #1f1e1e;
+  font-size: 1rem;
+  font-family: "Raleway", sans-serif;
+  margin-inline: 20px;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #817979;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+a:focus {
+  text-decoration: none;
+}
+a:hover,
+a:active {
+  text-decoration: none;
+}
+
+.search {
+  width: 20%;
+  display: flex;
+}
+
+.searchTerm {
+  width: 100%;
+  border: thin;
+  padding: 5px;
+  height: 26px;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+}
+
+.searchTerm:focus {
+  color: #252525;
+}
+
+.searchButton {
+  width: 40px;
+  height: 36px;
+  border: thin;
+  background: rgb(221, 217, 217);
+  text-align: center;
+  color: black;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.speedDial {
+  position: absolute;
+  right: 1vmax;
+  top: 1vmax;
+}
+
+.speedDialIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 100%;
+}

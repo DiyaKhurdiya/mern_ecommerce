@@ -1,0 +1,249 @@
+import React, { Fragment, useRef, useState, useEffect } from "react";
+import "./LoginSignup.css";
+import Loader from "../layout/Loader/Loader";
+import { Link } from "react-router-dom";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import { useDispatch, useSelector } from "react-redux";
+import { clearErrors, login, register } from "../../actions/userAction";
+import { useAlert } from "react-alert";
+import Profile from "../../images/profile.png";
+import GoogleLogin from "react-google-login";
+import axios from "axios";
+import { LOGIN} from "../../redux/authActions";
+import { LOGIN_REQUEST} from "../../constants/userConstants";
+
+const LoginSignup = ({ history, location }) => {
+  const dispatch = useDispatch();
+  const alert = useAlert();
+
+  const { error, loading, isAuthenticated } = useSelector(
+    (state) => state.user
+  );
+
+  const loginTab = useRef(null);
+  const registerTab = useRef(null);
+  const switcherTab = useRef(null);
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [user, setUser] = useState({ name: "", email: "", password: "" });
+  const { name, email, password } = user;
+  const [avatar, setAvatar] = useState(Profile);
+  const [avatarPreview, setAvatarPreview] = useState(Profile);
+
+  const loginSubmit = (e) => {
+    e.preventDefault();
+    dispatch(login(loginEmail, loginPassword));
+  };
+
+  const registerSubmit = (e) => {
+    e.preventDefault();
+
+    const myForm = new FormData();
+
+    myForm.set("name", name);
+    myForm.set("email", email);
+    myForm.set("password", password);
+    myForm.set("avatar", avatar);
+
+    dispatch(register(myForm));
+  };
+
+  const registerDataChange = (e) => {
+    if (e.target.name === "avatar") {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setAvatarPreview(reader.result);
+          setAvatar(reader.result);
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    } else {
+      setUser({ ...user, [e.target.name]: e.target.value });
+    }
+  };
+
+  const redirect = location.search ? location.search.split("=")[1] : "/account";
+
+  useEffect(() => {
+    if (error) {
+      alert.error(error);
+      dispatch(clearErrors());
+    }
+
+    if (isAuthenticated) {
+      history.push(redirect);
+    }
+  }, [dispatch, error, alert, history, isAuthenticated, redirect]);
+
+  const switchTabs = (e, tab) => {
+    if (tab === "login") {
+      switcherTab.current.classList.add("shiftToNeutral");
+      switcherTab.current.classList.remove("shiftToRight");
+
+      registerTab.current.classList.remove("shiftToNeutralForm");
+      loginTab.current.classList.remove("shiftToLeft");
+    }
+    if (tab === "register") {
+      switcherTab.current.classList.add("shiftToRight");
+      switcherTab.current.classList.remove("shiftToNeutral");
+
+      registerTab.current.classList.add("shiftToNeutralForm");
+      loginTab.current.classList.add("shiftToLeft");
+    }
+  };
+
+  // const googleSuccess = async(res) => {
+  //   const result = res?.profileObj;
+  //   const token = res?.tokenId;
+  //   try {
+  //     dispatch({ type: 'AUTH', data: {result, token}});
+      
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // const googleFailure = (error) => {
+  //   console.log(error);
+  //   console.log("Google sign in insuccessful!");
+  // };
+  const responseGoogle = async(response) => {
+        console.log(response.profileObj);
+    try {
+      dispatch({ type: LOGIN_REQUEST});
+      //const config = { headers: { "Content-Type": "application/json" } };
+      const res = await axios.post("/api/v1/googlelogin", {
+        tokenId: response.tokenId,
+        profileObj: response.profileObj,
+      });
+
+      setUser({ ...user, error: "", success: res.data.message });
+      localStorage.setItem("firstLogin", true);
+      //dispatch({ type: LOGIN_SUCCESS});
+      dispatch({type: LOGIN, payload: res.profileObj});
+      history.push("/");
+    } catch (error) {
+      dispatch({payload: error.response.data.message}); 
+        setUser({ ...user, error: error.response.data.message, success: "" });
+    }
+  };
+
+  
+  return (
+    <Fragment>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Fragment>
+          <div className="loginSignupContainer">
+            <div className="loginSignupBox">
+              <div>
+                <div className="login_signup_toggle">
+                  <p onClick={(e) => switchTabs(e, "login")}>LOGIN</p>
+                  <p onClick={(e) => switchTabs(e, "register")}>REGISTER</p>
+                </div>
+                <button ref={switcherTab}></button>
+              </div>
+              <form
+                className="loginForm"
+                ref={loginTab}
+                onSubmit={loginSubmit}
+                s
+              >
+                <div className="loginEmail">
+                  <MailOutlineIcon />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+                <div className="loginPassword">
+                  <LockOpenIcon />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                </div>
+                <Link to="/password/forgot">Forgot password?</Link>
+                <input type="submit" value="LOGIN" className="loginBtn" />
+                <div className="hr">
+                  <div className="social">
+                    <GoogleLogin
+                      clientId="932382815810-u2rvrnshr1jnnal448ikhvap4serp8q1.apps.googleusercontent.com"
+                      buttonText="Login with Google"
+                      onSuccess={responseGoogle}
+                      cookiePolicy={"single_host_origin"}
+                    />
+                  </div>
+                </div>
+              </form>
+              <form
+                className="signupForm"
+                ref={registerTab}
+                encType="multipart/form-data"
+                onSubmit={registerSubmit}
+              >
+                <div className="signupName">
+                  <PersonOutlineIcon />
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    required
+                    name="name"
+                    value={name}
+                    onChange={registerDataChange}
+                  />
+                </div>
+                <div className="signupEmail">
+                  <MailOutlineIcon />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    name="email"
+                    value={email}
+                    onChange={registerDataChange}
+                  />
+                </div>
+                <div className="signupPassword">
+                  <LockOpenIcon />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    required
+                    name="password"
+                    value={password}
+                    onChange={registerDataChange}
+                  />
+                </div>
+                <div id="registerImage">
+                  <img src={avatarPreview} alt="Avatar preview" />
+                  <input
+                    type="file"
+                    name="avatar"
+                    accept="image/*"
+                    onChange={registerDataChange}
+                  />
+                </div>
+                <input type="submit" value="REGISTER" className="signupBtn" />
+              </form>
+            </div>
+          </div>
+        </Fragment>
+      )}
+    </Fragment>
+  );
+};
+
+export default LoginSignup;
